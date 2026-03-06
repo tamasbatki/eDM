@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { writeWorkflowContext } from "@/lib/workflow-context";
 
@@ -41,20 +41,17 @@ type PdfResponse = {
 
 type EmailResponse = {
   html?: string;
+  mjml?: string;
   error?: { message?: string; details?: unknown };
 };
 
-const tickerExamples = [
-  "AAPL",
-  "MSFT",
-  "GOOGL",
-  "SPY",
-  "^GSPC (S&P 500)",
-  "^IXIC (Nasdaq)",
-  "BTC-USD",
-  "EURUSD=X",
-  "CL=F",
-];
+type TemplateSummary = {
+  id: string;
+  name: string;
+  updatedAt: string;
+};
+
+const tickerExamples = ["AAPL", "MSFT", "GOOGL", "SPY", "^GSPC (S&P 500)", "^IXIC (Nasdaq)", "BTC-USD", "EURUSD=X", "CL=F"];
 
 function htmlToPlainText(value: string): string {
   return value
@@ -66,63 +63,20 @@ function htmlToPlainText(value: string): string {
 }
 
 function normalizeSymbols(input: string): string[] {
-  return Array.from(
-    new Set(
-      input
-        .split(",")
-        .map((item) => item.trim().toUpperCase())
-        .filter(Boolean),
-    ),
-  );
-}
-
-function toAbsoluteUrl(url: string): string {
-  if (!url) return url;
-  if (/^https?:\/\//i.test(url)) return url;
-  if (!url.startsWith("/")) return url;
-
-  if (typeof window === "undefined") return url;
-  return `${window.location.origin}${url}`;
-}
-
-function appendChartsAndCta(baseHtml: string, chartUrls: string[], ctaUrl?: string): string {
-  const chartsHtml = chartUrls
-    .map((rawUrl) => toAbsoluteUrl(rawUrl))
-    .map(
-      (url) =>
-        `<div style="margin:14px 0;"><img src="${url}" alt="Piaci grafikon" style="max-width:100%;height:auto;border:1px solid #E5E5E7;" /></div>`,
-    )
-    .join("");
-
-  const ctaHref = ctaUrl ? toAbsoluteUrl(ctaUrl) : "";
-  const ctaHtml = ctaHref
-    ? `<p style="margin-top:16px;"><a href="${ctaHref}" style="display:inline-block;padding:11px 16px;background:#F18E00;color:#ffffff;text-decoration:none;border-radius:4px;font-family:Verdana, Helvetica, sans-serif;font-size:13px;">Teljes PDF megnyitasa</a></p>`
-    : "";
-
-  const block = `<div data-workflow-block="true" style="padding:20px;">${chartsHtml}${ctaHtml}</div>`;
-
-  if (baseHtml.includes("</body>")) {
-    return baseHtml.replace("</body>", `${block}</body>`);
-  }
-
-  return `${baseHtml}${block}`;
+  return Array.from(new Set(input.split(",").map((item) => item.trim().toUpperCase()).filter(Boolean)));
 }
 
 function parseApiError(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== "object") return fallback;
-
   const maybeError = (payload as { error?: { message?: string; details?: unknown } }).error;
   if (!maybeError?.message) return fallback;
-
   if (!maybeError.details) return maybeError.message;
-
   let detailsText = "";
   try {
     detailsText = JSON.stringify(maybeError.details);
   } catch {
     detailsText = String(maybeError.details);
   }
-
   return `${maybeError.message}: ${detailsText}`;
 }
 
@@ -131,7 +85,9 @@ export function WorkflowWorkspace() {
   const [symbolsInput, setSymbolsInput] = useState("AAPL,MSFT");
   const [range, setRange] = useState("1Y");
   const [variant, setVariant] = useState<"close-area" | "close-line">("close-line");
-  const [template, setTemplate] = useState<"market-update" | "portfolio-summary">("market-update");
+  const [pdfTemplate, setPdfTemplate] = useState<"market-update" | "portfolio-summary">("market-update");
+  const [emailTemplates, setEmailTemplates] = useState<TemplateSummary[]>([]);
+  const [selectedEmailTemplateId, setSelectedEmailTemplateId] = useState("");
   const [generatePdf, setGeneratePdf] = useState(true);
   const [generateEmail, setGenerateEmail] = useState(true);
 
@@ -141,12 +97,48 @@ export function WorkflowWorkspace() {
   const [aiText, setAiText] = useState("");
   const [pdfUrl, setPdfUrl] = useState("");
   const [emailHtml, setEmailHtml] = useState("");
+  const [emailTemplateNotice, setEmailTemplateNotice] = useState("");
   const [symbolCheck, setSymbolCheck] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [checkingSymbols, setCheckingSymbols] = useState(false);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [error, setError] = useState("");
 
   const symbols = useMemo(() => normalizeSymbols(symbolsInput), [symbolsInput]);
+
+  useEffect(() => {
+    void fetchEmailTemplates();
+  }, []);
+
+  async function fetchEmailTemplates() {
+    setLoadingTemplates(true);
+    setEmailTemplateNotice("");
+
+    try {
+      const res = await fetch("/api/email/templates", { cache: "no-store" });
+      const json = (await res.json()) as {
+        templates?: TemplateSummary[];
+        error?: { message?: string };
+      };
+
+      if (!res.ok || !json.templates) {
+        throw new Error(json.error?.message ?? "Email template lista betoltese sikertelen.");
+      }
+
+      const templateList = json.templates;
+      setEmailTemplates(templateList);
+      if (templateList.length > 0) {
+        setSelectedEmailTemplateId((current) => current || templateList[0].id);
+      }
+      if (templateList.length === 0) {
+        setEmailTemplateNotice("Még nincs elmentett email template. Előbb készíts egyet a Template Builderben.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unexpected error");
+    } finally {
+      setLoadingTemplates(false);
+    }
+  }
 
   async function checkSymbols() {
     setCheckingSymbols(true);
@@ -159,18 +151,15 @@ export function WorkflowWorkspace() {
       }
 
       const lines: string[] = [];
-
       for (const symbol of symbols) {
         const res = await fetch(`/api/finance/history?symbol=${encodeURIComponent(symbol)}&range=1M`);
         const json = (await res.json()) as HistoryResponse;
-
         if (res.ok && json.points?.length) {
           lines.push(`OK: ${symbol} (${json.points.length} pont)`);
         } else {
           lines.push(`HIBA: ${symbol} - ${parseApiError(json, "Nincs elerheto adat")}`);
         }
       }
-
       setSymbolCheck(lines);
     } finally {
       setCheckingSymbols(false);
@@ -181,7 +170,7 @@ export function WorkflowWorkspace() {
     setLoading(true);
     setError("");
     setWarnings([]);
-    setStatus("Workflow inditasa...");
+    setStatus("Composer inditasa...");
 
     try {
       if (!generatePdf && !generateEmail) {
@@ -192,6 +181,10 @@ export function WorkflowWorkspace() {
         throw new Error("Adj meg legalabb 1 ticker-t.");
       }
 
+      if (generateEmail && !selectedEmailTemplateId) {
+        throw new Error("Valassz ki egy email template-et a generalashoz.");
+      }
+
       setStatus("1/4 Chart generalas...");
       const generatedCharts: string[] = [];
       const chartWarnings: string[] = [];
@@ -200,7 +193,6 @@ export function WorkflowWorkspace() {
         try {
           const historyRes = await fetch(`/api/finance/history?symbol=${encodeURIComponent(symbol)}&range=${range}`);
           const historyJson = (await historyRes.json()) as HistoryResponse;
-
           if (!historyRes.ok || !historyJson.points?.length) {
             throw new Error(parseApiError(historyJson, `Nincs adat: ${symbol}`));
           }
@@ -208,14 +200,8 @@ export function WorkflowWorkspace() {
           const chartRes = await fetch("/api/charts/render", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              symbol: historyJson.symbol,
-              range,
-              variant,
-              points: historyJson.points,
-            }),
+            body: JSON.stringify({ symbol: historyJson.symbol, range, variant, points: historyJson.points }),
           });
-
           const chartJson = (await chartRes.json()) as ChartRenderResponse;
           if (!chartRes.ok || !chartJson.imageUrl) {
             throw new Error(parseApiError(chartJson, `Chart hiba: ${symbol}`));
@@ -230,7 +216,7 @@ export function WorkflowWorkspace() {
       setChartUrls(generatedCharts);
       setWarnings(chartWarnings);
 
-      setStatus("2/4 AI newsletter tartalom generalas...");
+      setStatus("2/4 AI tartalom generalas...");
       const newsletterRes = await fetch("/api/ai/newsletter-from-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -238,7 +224,7 @@ export function WorkflowWorkspace() {
       });
       const newsletterJson = (await newsletterRes.json()) as NewsletterResponse;
 
-      if (!newsletterRes.ok || !newsletterJson.draft || !newsletterJson.html) {
+      if (!newsletterRes.ok || !newsletterJson.draft) {
         throw new Error(parseApiError(newsletterJson, "AI newsletter generalas sikertelen."));
       }
 
@@ -246,13 +232,14 @@ export function WorkflowWorkspace() {
       setAiText(combinedText);
 
       let createdPdfUrl = "";
+      let createdEmailHtml = "";
       if (generatePdf) {
         setStatus("3/4 PDF generalas...");
         const pdfRes = await fetch("/api/pdf/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            template,
+            template: pdfTemplate,
             body: combinedText,
             chartImageUrls: generatedCharts,
             chartImageUrl: generatedCharts[0] ?? "",
@@ -271,33 +258,35 @@ export function WorkflowWorkspace() {
       }
 
       if (generateEmail) {
-        setStatus("4/4 Email HTML export generalas...");
-
-        const emailInputHtml = appendChartsAndCta(
-          newsletterJson.html,
-          generatedCharts,
-          createdPdfUrl || newsletterJson.sourceUrl,
-        );
-
-        const emailRes = await fetch("/api/email/export-html", {
+        setStatus("4/4 Email generalas a valasztott template alapjan...");
+        const emailRes = await fetch("/api/email/render-template", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ html: emailInputHtml }),
+          body: JSON.stringify({
+            templateId: selectedEmailTemplateId,
+            newsletterTitle: newsletterJson.draft.title,
+            newsletterLead: newsletterJson.draft.lead,
+            newsletterBody: htmlToPlainText(newsletterJson.draft.bodyHtml),
+            chartImageUrls: generatedCharts,
+            pdfUrl: createdPdfUrl || undefined,
+            sourceUrl: newsletterJson.sourceUrl,
+          }),
         });
 
         const emailJson = (await emailRes.json()) as EmailResponse;
         if (!emailRes.ok || !emailJson.html) {
-          throw new Error(parseApiError(emailJson, "Email export sikertelen."));
+          throw new Error(parseApiError(emailJson, "Email generalas sikertelen."));
         }
 
-        setEmailHtml(emailJson.html);
+        createdEmailHtml = emailJson.html;
+        setEmailHtml(createdEmailHtml);
       } else {
         setEmailHtml("");
       }
 
       writeWorkflowContext({
         aiText: combinedText,
-        newsletterHtml: newsletterJson.html,
+        newsletterHtml: generateEmail ? createdEmailHtml : newsletterJson.html,
         chartImageUrls: generatedCharts,
         chartImageUrl: generatedCharts[0],
         pdfUrl: createdPdfUrl || undefined,
@@ -305,10 +294,10 @@ export function WorkflowWorkspace() {
         sourceUrl: newsletterJson.sourceUrl,
       });
 
-      setStatus("Kesz: workflow sikeresen lefutott.");
+      setStatus("Kesz: composer sikeresen lefutott.");
     } catch (flowError) {
       setStatus("");
-      setError(flowError instanceof Error ? flowError.message : "Workflow hiba");
+      setError(flowError instanceof Error ? flowError.message : "Composer hiba");
     } finally {
       setLoading(false);
     }
@@ -317,21 +306,11 @@ export function WorkflowWorkspace() {
   return (
     <section className="space-y-4 rounded-2xl border border-brand-mist/60 bg-white/95 p-5 shadow-sm">
       <div className="grid gap-3 md:grid-cols-2">
-        <input
-          value={articleUrl}
-          onChange={(e) => setArticleUrl(e.target.value)}
-          className="rounded-lg border border-brand-mist px-3 py-2 text-sm"
-          placeholder="Cikk URL"
-        />
-        <input
-          value={symbolsInput}
-          onChange={(e) => setSymbolsInput(e.target.value)}
-          className="rounded-lg border border-brand-mist px-3 py-2 text-sm"
-          placeholder="Tickerek vesszovel elvalasztva (pl. AAPL,MSFT,SPY)"
-        />
+        <input value={articleUrl} onChange={(e) => setArticleUrl(e.target.value)} className="rounded-lg border border-brand-mist px-3 py-2 text-sm" placeholder="Cikk URL" />
+        <input value={symbolsInput} onChange={(e) => setSymbolsInput(e.target.value)} className="rounded-lg border border-brand-mist px-3 py-2 text-sm" placeholder="Tickerek vesszovel elvalasztva (pl. AAPL,MSFT,SPY)" />
 
         <select value={range} onChange={(e) => setRange(e.target.value)} className="rounded-lg border border-brand-mist px-3 py-2 text-sm">
-          {[["1M", "1 honap"],["3M", "3 honap"],["6M", "6 honap"],["1Y", "1 ev"],["3Y", "3 ev"],["5Y", "5 ev"],["MAX", "Max"]].map(([value, label]) => (
+          {[ ["1M", "1 honap"], ["3M", "3 honap"], ["6M", "6 honap"], ["1Y", "1 ev"], ["3Y", "3 ev"], ["5Y", "5 ev"], ["MAX", "Max"] ].map(([value, label]) => (
             <option key={value} value={value}>{label}</option>
           ))}
         </select>
@@ -341,9 +320,16 @@ export function WorkflowWorkspace() {
           <option value="close-line">Sima vonaldiagram</option>
         </select>
 
-        <select value={template} onChange={(e) => setTemplate(e.target.value as "market-update" | "portfolio-summary")} className="rounded-lg border border-brand-mist px-3 py-2 text-sm">
-          <option value="market-update">PDF: Piaci helyzetkep</option>
-          <option value="portfolio-summary">PDF: Portfolio osszefoglalo</option>
+        <select value={pdfTemplate} onChange={(e) => setPdfTemplate(e.target.value as "market-update" | "portfolio-summary")} className="rounded-lg border border-brand-mist px-3 py-2 text-sm">
+          <option value="market-update">PDF template: Piaci helyzetkep</option>
+          <option value="portfolio-summary">PDF template: Portfolio osszefoglalo</option>
+        </select>
+
+        <select value={selectedEmailTemplateId} onChange={(e) => setSelectedEmailTemplateId(e.target.value)} className="rounded-lg border border-brand-mist px-3 py-2 text-sm" disabled={loadingTemplates || emailTemplates.length === 0}>
+          <option value="">Email template valasztasa</option>
+          {emailTemplates.map((template) => (
+            <option key={template.id} value={template.id}>{template.name}</option>
+          ))}
         </select>
 
         <div className="flex items-center gap-5 rounded-lg border border-brand-mist px-3 py-2 text-sm">
@@ -353,26 +339,19 @@ export function WorkflowWorkspace() {
       </div>
 
       <div className="rounded-lg border border-brand-mist/70 bg-brand-mist/20 p-3 text-xs text-slate-700">
-        <p className="font-semibold text-brand-navy">Ticker segitseg (Yahoo formatum)</p>
-        <p className="mt-1">Pelda kodok: {tickerExamples.join(", ")}</p>
-        <button onClick={checkSymbols} disabled={checkingSymbols} className="mt-2 rounded border px-3 py-1 text-xs">
-          {checkingSymbols ? "Ellenorzes..." : "Ticker-ek ellenorzese"}
-        </button>
-        {symbolCheck.length > 0 && (
-          <div className="mt-2 space-y-1">
-            {symbolCheck.map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        )}
+        <p className="font-semibold text-brand-navy">Template es ticker segitseg</p>
+        <p className="mt-1">Yahoo ticker peldak: {tickerExamples.join(", ")}</p>
+        <p className="mt-1">Email template-ek: {loadingTemplates ? "betoltes..." : `${emailTemplates.length} elerheto`}</p>
+        {emailTemplateNotice && <p className="mt-1 text-amber-700">{emailTemplateNotice}</p>}
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button onClick={checkSymbols} disabled={checkingSymbols} className="rounded border px-3 py-1 text-xs">{checkingSymbols ? "Ellenorzes..." : "Ticker-ek ellenorzese"}</button>
+          <button onClick={() => void fetchEmailTemplates()} disabled={loadingTemplates} className="rounded border px-3 py-1 text-xs">{loadingTemplates ? "Frissites..." : "Template lista frissitese"}</button>
+        </div>
+        {symbolCheck.length > 0 && <div className="mt-2 space-y-1">{symbolCheck.map((line) => <p key={line}>{line}</p>)}</div>}
       </div>
 
-      <button
-        onClick={generateAll}
-        disabled={loading}
-        className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
-      >
-        {loading ? "Workflow fut..." : "Generate All (Chart + AI + PDF + Email)"}
+      <button onClick={generateAll} disabled={loading} className="rounded-lg bg-brand-navy px-4 py-2 text-sm font-semibold text-white transition hover:brightness-95 disabled:opacity-60">
+        {loading ? "Composer fut..." : "Tartalom generalasa a valasztott template-ekbe"}
       </button>
 
       {status && <p className="text-sm text-slate-700">{status}</p>}
@@ -380,9 +359,7 @@ export function WorkflowWorkspace() {
 
       {warnings.length > 0 && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-          {warnings.map((warning) => (
-            <p key={warning}>{warning}</p>
-          ))}
+          {warnings.map((warning) => <p key={warning}>{warning}</p>)}
         </div>
       )}
 
@@ -400,15 +377,11 @@ export function WorkflowWorkspace() {
 
       {aiText && <textarea readOnly value={aiText} className="h-56 w-full rounded border p-2 text-sm" />}
 
-      {pdfUrl && (
-        <p className="text-sm">
-          PDF: <a href={pdfUrl} target="_blank" className="text-brand-teal underline">{pdfUrl}</a>
-        </p>
-      )}
-
-      {emailHtml && (
-        <textarea readOnly value={emailHtml} className="h-72 w-full rounded border p-2 font-mono text-xs" />
-      )}
+      {pdfUrl && <p className="text-sm">PDF: <a href={pdfUrl} target="_blank" className="text-brand-teal underline">{pdfUrl}</a></p>}
+      {emailHtml && <textarea readOnly value={emailHtml} className="h-72 w-full rounded border p-2 font-mono text-xs" />}
     </section>
   );
 }
+
+
+

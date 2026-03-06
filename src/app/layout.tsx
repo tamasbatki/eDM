@@ -1,4 +1,4 @@
-import "./globals.css";
+﻿import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -15,11 +15,11 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: "/", label: "Dashboard" },
-  { href: "/workflow", label: "Workflow" },
+  { href: "/workflow", label: "Composer" },
   { href: "/charts", label: "Charts" },
   { href: "/ai", label: "AI" },
   { href: "/pdf", label: "PDF" },
-  { href: "/email-builder", label: "Email Builder" },
+  { href: "/email-builder", label: "Template Builder" },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

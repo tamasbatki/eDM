@@ -1,4 +1,4 @@
-@import "grapesjs/dist/css/grapes.min.css";
+﻿@import "grapesjs/dist/css/grapes.min.css";
 
 @tailwind base;
 @tailwind components;
@@ -49,3 +49,45 @@ h1, h2, h3, h4, h5, h6 {
 .gjs-editor {
   border-radius: 10px;
 }
+
+.condm-blocks .gjs-block-category {
+  border-bottom: 1px solid var(--brand-border);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.condm-blocks .gjs-title {
+  background: transparent;
+  color: var(--brand-secondary);
+  font-weight: 700;
+  border-bottom: none;
+  padding: 6px 0;
+}
+
+.condm-blocks .gjs-blocks-c {
+  display: grid;
+  gap: 10px;
+}
+
+.condm-blocks .gjs-block {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid var(--brand-border);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  color: var(--brand-secondary);
+  padding: 10px;
+}
+
+.condm-blocks .gjs-block:hover {
+  border-color: var(--brand-primary);
+  box-shadow: 0 10px 26px rgba(241, 142, 0, 0.16);
+}
+
+.condm-blocks .gjs-block-label {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+

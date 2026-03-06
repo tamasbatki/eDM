@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+﻿import OpenAI from "openai";
 import { z } from "zod";
 
 import { AppError } from "@/lib/app-error";
@@ -39,6 +39,27 @@ function assertAiEnabled() {
 function truncateText(text: string, maxChars: number): string {
   if (text.length <= maxChars) return text;
   return `${text.slice(0, maxChars)}\n\n[TRUNCATED:${text.length - maxChars}]`;
+}
+
+function normalizeWhitespace(value: unknown): string {
+  return typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
+}
+
+function trimToMax(value: string, max: number): string {
+  return value.length > max ? value.slice(0, max).trim() : value;
+}
+
+function normalizeNewsletterDraft(raw: unknown): Record<string, string> {
+  const input = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
+
+  return {
+    subject: trimToMax(normalizeWhitespace(input.subject), 120),
+    preheader: trimToMax(normalizeWhitespace(input.preheader), 180),
+    title: trimToMax(normalizeWhitespace(input.title), 120),
+    lead: trimToMax(normalizeWhitespace(input.lead), 450),
+    bodyHtml: typeof input.bodyHtml === "string" ? trimToMax(input.bodyHtml.trim(), 5000) : "",
+    ctaLabel: trimToMax(normalizeWhitespace(input.ctaLabel), 40),
+  };
 }
 
 async function completeWithOpenAi(systemPrompt: string, userPrompt: string): Promise<string> {
@@ -121,9 +142,7 @@ async function generateWithGeminiModel(apiKey: string, model: string, systemProm
 
 async function completeWithGemini(systemPrompt: string, userPrompt: string): Promise<string> {
   const apiKey = getRequiredEnv("GEMINI_API_KEY");
-  const models = Array.from(
-    new Set([env.geminiModel, "gemini-2.5-flash", "gemini-2.0-flash"]),
-  );
+  const models = Array.from(new Set([env.geminiModel, "gemini-2.5-flash", "gemini-2.0-flash"]));
 
   const failures: Array<{ model: string; status: number; message: string }> = [];
 
@@ -157,10 +176,9 @@ async function completeWithGemini(systemPrompt: string, userPrompt: string): Pro
 async function completeWithSystemPrompt(systemPrompt: string, userPrompt: string): Promise<string> {
   assertAiEnabled();
 
-  const text =
-    env.llmProvider === "openai"
-      ? await completeWithOpenAi(systemPrompt, userPrompt)
-      : await completeWithGemini(systemPrompt, userPrompt);
+  const text = env.llmProvider === "openai"
+    ? await completeWithOpenAi(systemPrompt, userPrompt)
+    : await completeWithGemini(systemPrompt, userPrompt);
 
   if (!text) {
     throw new AppError("UPSTREAM_FAILURE", "LLM did not return usable text", 502, {
@@ -211,11 +229,13 @@ export async function generateNewsletterDraftFromArticle(input: {
 
   const raw = await completeWithSystemPrompt(SYSTEM_PROMPT_NEWSLETTER_HU, userPrompt);
   const parsed = JSON.parse(extractJsonObject(raw));
+  const normalized = normalizeNewsletterDraft(parsed);
 
-  const result = newsletterSchema.safeParse(parsed);
+  const result = newsletterSchema.safeParse(normalized);
   if (!result.success) {
     throw new AppError("UPSTREAM_FAILURE", "LLM JSON schema validation failed", 502, {
       issues: result.error.flatten(),
+      normalized,
     });
   }
 
@@ -224,5 +244,6 @@ export async function generateNewsletterDraftFromArticle(input: {
 
 export const llmInternals = {
   truncateText,
+  normalizeNewsletterDraft,
   MAX_ARTICLE_CHARS,
 };

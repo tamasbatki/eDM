@@ -1,10 +1,15 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 const cards = [
   {
     href: "/workflow",
-    title: "One-Click Workflow",
-    description: "Chart(ok) + AI + PDF/Email egyetlen futtatassal",
+    title: "Composer",
+    description: "AI + chartok + PDF/Email generalas valasztott template-ekbe",
+  },
+  {
+    href: "/email-builder",
+    title: "Email Template Builder",
+    description: "Kulon template szerkeszto email layoutok keszitesehez",
   },
   {
     href: "/charts",
@@ -21,11 +26,6 @@ const cards = [
     title: "PDF Builder",
     description: "Template-based PDF generation via Puppeteer",
   },
-  {
-    href: "/email-builder",
-    title: "Visual Email Builder",
-    description: "Drag-and-drop authoring with merge tags and HTML export",
-  },
 ];
 
 export default function HomePage() {
@@ -34,8 +34,7 @@ export default function HomePage() {
       <div className="rounded-2xl border border-brand-mist/70 bg-white/90 p-6 shadow-sm">
         <h1 className="text-2xl font-semibold text-brand-navy">Phase 1 MVP Workspace</h1>
         <p className="mt-2 max-w-3xl text-sm text-slate-600">
-          Internal builder/generator felulet chart, AI, PDF es email HTML kesziteshez. Sending, tracking es analytics
-          intentionally out of scope.
+          Kulon template builder es kulon composer felulet chart, AI, PDF es email HTML kesziteshez. Sending, tracking es analytics intentionally out of scope.
         </p>
       </div>
 

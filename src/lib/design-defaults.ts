@@ -1,49 +1,95 @@
-const fontBody = 'Verdana, Helvetica, sans-serif';
+﻿const fontBody = 'Verdana, Helvetica, sans-serif';
+const fontHeading = 'Arial, Helvetica, sans-serif';
+const todayLabel = new Date().toLocaleDateString('hu-HU');
 
 export const defaultChartDesign = {
-  titleColor: "#454547",
-  lineColor: "#F18E00",
-  benchmarkColor: "#454547",
-  axisTextColor: "#808083",
-  gridColor: "#E5E5E7",
-  fillColor: "rgba(241,142,0,0.16)",
+  titleColor: '#454547',
+  lineColor: '#F18E00',
+  benchmarkColor: '#454547',
+  axisTextColor: '#808083',
+  gridColor: '#E5E5E7',
+  fillColor: 'rgba(241,142,0,0.16)',
   fontFamily: fontBody,
 } as const;
 
 export const defaultEmailSnippets = {
-  cta: `<a href="{{pdf_url}}" style="display:inline-block;padding:11px 16px;background:#F18E00;color:#ffffff;text-decoration:none;border-radius:4px;font-family:${fontBody};font-size:13px;">A teljes cikkert kattintson ide</a>`,
-  chart: `<img src="{{chart_image_url}}" alt="Piaci grafikon" style="max-width:100%;height:auto;border:1px solid #E5E5E7;" />`,
+  cta: `
+    <mj-button
+      align="left"
+      background-color="#F18E00"
+      color="#ffffff"
+      font-family="${fontHeading}"
+      font-size="14px"
+      border-radius="4px"
+      inner-padding="14px 22px"
+      href="{{pdf_url}}"
+    >
+      Megnyitas
+    </mj-button>
+  `,
+  chart: `
+    <mj-image
+      src="{{chart_image_url}}"
+      alt="Piaci grafikon"
+      padding="0"
+      fluid-on-mobile="true"
+      border="1px solid #E5E5E7"
+    />
+  `,
 } as const;
 
 export const defaultEmailTemplate = `
-<table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;background:#F0F0F0;">
-  <tr>
-    <td align="center" style="padding:20px 10px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="794" style="width:100%;max-width:794px;background:#ffffff;">
-        <tr>
-          <td style="padding:20px 30px;background:#454547;color:#ffffff;font-family:${fontBody};font-size:24px;line-height:1.3;font-weight:normal;text-transform:uppercase;">
-            {{portfolio_name}} - napi hirlevel
-          </td>
-        </tr>
-        <tr>
-          <td style="background:#6C6C6E;color:#D8D8D8;padding:10px 30px;font-family:${fontBody};font-size:11px;">
-            {{advisor_name}} | frissitve: ${new Date().toLocaleDateString("hu-HU")}
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:20px 20px 10px 20px;text-align:justify;font-family:${fontBody};font-size:13px;line-height:22px;color:#69696c;">
-            <p style="margin:0 0 12px 0;">Kedves {{client_name}},</p>
-            <p style="margin:0 0 12px 0;">Itt a mai osszefoglalo a kiemelt cikkrol es piaci kontextusrol.</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:0 20px 16px 20px;">${defaultEmailSnippets.chart}</td>
-        </tr>
-        <tr>
-          <td style="padding:0 20px 24px 20px;">${defaultEmailSnippets.cta}</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
+  <mjml>
+    <mj-head>
+      <mj-attributes>
+        <mj-all font-family="${fontBody}" />
+        <mj-text color="#454547" font-size="14px" line-height="22px" padding="0" />
+        <mj-section background-color="#ffffff" padding="0" />
+        <mj-column padding="0" />
+        <mj-button font-family="${fontHeading}" />
+      </mj-attributes>
+      <mj-style inline="inline">
+        .content-card div {
+          text-align: left;
+        }
+      </mj-style>
+    </mj-head>
+    <mj-body background-color="#F3F4F6" width="794px">
+      <mj-wrapper padding="24px 12px" background-color="#ffffff" border="1px solid #E5E5E7" css-class="content-card">
+        <mj-section background-color="#454547" padding="24px 30px 18px 30px">
+          <mj-column>
+            <mj-text color="#ffffff" font-family="${fontHeading}" font-size="28px" font-weight="700" letter-spacing="0.4px">
+              {{portfolio_name}} - napi hirlevel
+            </mj-text>
+            <mj-text color="#D8D8D8" font-size="12px" padding-top="8px">
+              {{advisor_name}} | frissitve: ${todayLabel}
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-section padding="30px 30px 10px 30px">
+          <mj-column>
+            <mj-text>Kedves {{client_name}},</mj-text>
+            <mj-text padding-top="12px">
+              Itt a mai osszefoglalo a kiemelt cikkrol es piaci kontextusrol.
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        {{content_block}}
+
+        <mj-section padding="0 30px 18px 30px">
+          <mj-column>
+            ${defaultEmailSnippets.chart}
+          </mj-column>
+        </mj-section>
+
+        <mj-section padding="0 30px 30px 30px">
+          <mj-column>
+            ${defaultEmailSnippets.cta}
+          </mj-column>
+        </mj-section>
+      </mj-wrapper>
+    </mj-body>
+  </mjml>
 `;
