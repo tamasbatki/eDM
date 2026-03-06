@@ -1,0 +1,544 @@
+@font-face {
+    font-family: 'hurme_geometric_sans_3light';
+    src: url('../fonts/hurmegeometricsans3_light-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3_light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3_light-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3_light-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3_light-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'hurme_geometric_sans_3LtOb';
+    src: url('../fonts/hurmegeometricsans3_lightoblique-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3_lightoblique-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3_lightoblique-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3_lightoblique-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3_lightoblique-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'hurme_geometric_sans_3regular';
+    src: url('../fonts/hurmegeometricsans3-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'hurme_geometric_sans_3oblique';
+    src: url('../fonts/hurmegeometricsans3_oblique-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3_oblique-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3_oblique-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3_oblique-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3_oblique-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'hurme_geometric_sans_3SBd';
+    src: url('../fonts/hurmegeometricsans3_semibold-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3_semibold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3_semibold-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3_semibold-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3_semibold-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'hurme_geometric_sans_3SBdOb';
+    src: url('../fonts/hurmegeometricsans3_semiboldoblique-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3_semiboldoblique-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3_semiboldoblique-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3_semiboldoblique-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3_semiboldoblique-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'hurme_geometric_sans_3bold';
+    src: url('../fonts/hurmegeometricsans3_bold-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3_bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3_bold-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3_bold-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3_bold-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'hurme_geometric_sans_3BdOb';
+    src: url('../fonts/hurmegeometricsans3_boldoblique-webfont.eot');
+    src: url('../fonts/hurmegeometricsans3_boldoblique-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/hurmegeometricsans3_boldoblique-webfont.woff2') format('woff2'),
+         url('../fonts/hurmegeometricsans3_boldoblique-webfont.woff') format('woff'),
+         url('../fonts/hurmegeometricsans3_boldoblique-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*TYPO==========================================================================*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: inherit;
+  font-weight: normal;
+  line-height: 1.1;
+  font-family: 'hurme_geometric_sans_3SBd';
+}
+p {
+	color:#5c5c5e;
+	margin: 0 0 25px;
+}
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    margin-bottom: 1rem;
+}
+h1,
+.h1 {
+  font-size: 2.8rem;
+}
+h2,
+.h2 {
+  font-size:2.4rem;
+}
+h3,
+.h3 {
+  font-size: 1.8rem;
+}
+h4,
+.h4 {
+  font-size: 1.65rem;
+}
+h5,
+.h5 {
+  font-size: 1.35rem;
+}
+h6,
+.h6 {
+  font-size: 12px;
+}
+
+a{
+	color:#f18e00;
+	transition:all 0.25s ease 0s;
+}
+
+a:hover, a:active, a:focus{
+	color:#d57d00;
+	outline:none;
+	text-decoration:none;
+}
+
+.strong{
+	font-weight:600;
+}
+
+.italic{
+	font-style: italic;
+}
+
+.slim{
+	font-weight:300;
+}
+
+.bigger{
+	font-size:1.25rem;
+}
+
+.light-grey{
+	color:#97979a;
+}
+
+.grey{
+	color:#808083;
+}
+
+.grey li a{
+	color:#808083 !important;
+}
+
+.grey li a:hover{
+	color:#f18e00 !important;
+}
+
+small, p.small {
+  font-size: 85%;
+  line-height:1.7em;
+}
+
+p.small{
+	margin-bottom:15px;
+}
+
+/*LIST==========================================================================*/
+.simple-list{
+	margin:0 0 20px 0;
+	padding:0 0 0 15px;
+}
+
+.simple-list li{
+	padding-bottom:5px;
+}
+
+.awwards-list{
+	margin:10px 0 30px 0;
+	list-style:none;
+	padding:0 0 15px 0;
+}
+
+.awards-list{
+	list-style:none;
+	color:#5c5c5e;
+	margin-bottom:50px;
+}
+
+.awwards-list li{
+	padding:5px 0;
+}
+
+.numbered-list{
+	padding-left:15px;
+	margin-bottom:20px;
+}
+
+.numbered-list li{
+	margin-bottom:15px;
+}
+
+ol.numbered-list  ul{
+	margin-top:20px;
+}
+
+ol.numbered-list  ul li{
+	list-style:disc;
+	margin-left:10px;
+	line-height:2.4rem;
+	margin-bottom:10px;
+	font-size:95%;
+}
+
+.side-menu{
+	list-style:none;
+	color:#5c5c5e;
+	margin-bottom:40px;
+}
+
+.side-menu li{
+	padding:15px 0;
+	font-size:1.2rem;
+	line-height:40px;
+	text-transform:uppercase;
+	font-family: 'hurme_geometric_sans_3SBd';
+	border-bottom:1px solid #EDEDED;
+	width:100%;
+	display:inline-block;
+}
+
+.side-menu li a{
+	color:#5c5c5e;
+}
+
+.side-menu li a:hover{
+	color:#d57d00;
+}
+
+.side-menu li img{
+	margin-right:10px;
+	width:40px;
+	float:left;
+}
+
+.side-menu li span{
+	display: inline-block;
+	width: calc(100% - 50px);
+	line-height:1.7em;
+}
+
+.side-menu li ul {
+	padding:10px 0 0 0;
+}
+
+.side-menu li ul li{
+	text-transform:none;
+	line-height:20px;
+	padding:5px 0 5px 50px;
+	border-bottom:none;
+}
+
+.pure-list{
+	margin:10px 0 30px 0;
+	list-style:none;
+}
+
+.pure-list li{
+	padding-bottom:5px;
+}
+
+.country{
+	margin:30px 0 50px 0;
+}
+
+.country-list{
+	margin:0px 0 50px 0;
+	list-style:none;
+	font-size:1.5rem;
+}
+
+.country-list li{
+	padding-bottom:0px;
+	line-height:1.7em;
+}
+
+.country-list li a{
+	color:#5c5c5e;
+}
+
+.country-list li a:hover{
+	color:#f18e00 !important;
+}
+
+.tabs {
+    list-style: outside none none;
+	margin-bottom:15px;
+	width:100%;
+	float:left;
+	border-bottom: 1px solid #ccc;
+	height:44px;
+}
+
+.tabs li {
+    display: inline-block;
+	font-family: "hurme_geometric_sans_3SBd";
+    font-weight: normal;
+	border: 1px solid #ccc;
+	padding: 5px 15px;
+	margin-right:10px;
+	height:44px;
+}
+
+.tabs li.cur {
+    background: white none repeat scroll 0 0;
+    border-bottom: 1px solid white;
+}
+
+.tabs li.cur a {
+	color:#f18e00;
+ }
+
+.tabs li a {
+    background: white none repeat scroll 0 0;
+    display: block;
+    float: left;
+    text-decoration: none;
+	color:#5c5c5e;
+	font-size:1.6rem;
+}
+
+.tabs li a:hover{
+	color:#d57d00 !important;
+}
+
+.list-inline{
+	margin-bottom:20px;
+}
+
+.lined-list{
+	margin:10px 0 30px 0;
+	list-style:none;
+	padding:0 0 15px 0;
+}
+
+.lined-list{
+	list-style:none;
+	color:#5c5c5e;
+	margin-bottom:50px;
+}
+
+.lined-list li{
+	padding:5px 0;
+	line-height:30px;
+	border-bottom:1px solid #EDEDED;
+	font-family: "hurme_geometric_sans_3SBd";
+}
+
+
+/*BUTTON==========================================================================*/
+.btn {
+    display: inline-block;
+    padding: .75rem 2rem;
+	letter-spacing:.025rem;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid #e38600;
+    border-radius: 50px;
+	font-family: 'hurme_geometric_sans_3SBd';
+}
+
+.btn-lg,
+.btn-group-lg > .btn {
+  padding: 1rem 2rem;
+  border-radius: 100px;
+  font-family: 'hurme_geometric_sans_3SBd';
+}
+
+.btn-orange {
+    color: #fff;
+    background-color: #f18e00;
+    border-color: #f18e00;
+	text-transform:uppercase;
+}
+
+.btn-orange:hover, .btn-orange:focus, .btn-orange:active{
+	background:#f69a17;
+	color:#ffffff !important;
+	outline:none;
+	box-shadow: none;
+}
+
+.btns .btn{
+	margin:10px 5px 20px 0;
+}
+
+.btn-default {
+    background-color: #fff;
+    border-color: #aeaeb1;
+    color: #5c5c5e;
+}
+
+.btn-default:hover {
+    background-color: #f2f2f4;
+    border-color: #c1c1c3;
+    color: #5c5c5e;
+	outline:0 none;
+}
+
+.btn:active, .btn.active {
+    background-image: none;
+    box-shadow: none;
+    outline: 0 none;
+}
+
+.btn-default.active{
+    background-color: #ffffff;
+    border-color: #f69a17;
+    color: #5c5c5c;
+	outline:0 none;
+}
+
+.btn-default:active:hover, .btn-default.active:hover, .open > .dropdown-toggle.btn-default:hover, .btn-default:active:focus, .btn-default.active:focus, .open > .dropdown-toggle.btn-default:focus, .btn-default.focus:active, .btn-default.active.focus, .open > .dropdown-toggle.btn-default.focus {
+    background-color: #f2f2f4;
+    border-color: #f69a17;
+    color: #5c5c5c;
+	outline:0 none;
+}
+
+/*MISC==========================================================================*/
+.inside-text-box{
+	max-width:550px;
+}
+
+.right-float{
+	float:right;
+}
+
+.image-block .btn, .text-block .btn{
+	margin-top:20px;
+}
+
+.site-lead{
+	margin-top:10px;
+	margin-bottom:60px;
+}
+
+.home-wrapper p{
+	font-size:110%;
+}
+
+.home-wrapper h2, .home-wrapper .h2 {
+  font-size:4rem;
+  margin-bottom:50px;
+}
+
+.text-block h2 {
+  font-size:3.25rem !important;
+  margin-bottom:50px;
+}
+
+.white-color, .white-color p{
+	color:#ffffff;
+}
+
+.quotes{
+	font-family: 'hurme_geometric_sans_3oblique';
+	color:#808083;
+	margin-bottom:15px;
+}
+
+.bordered{
+	border-bottom:1px solid #EDEDED;
+	padding-bottom:10px;
+}
+
+hr {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #e8e8e8 -moz-use-text-color -moz-use-text-color;
+    border-image: none;
+    border-style: solid none none;
+    border-width: 1px 0 0;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.index-quote{
+	margin-bottom:15px;
+	margin-top:30px;
+	font-size:1.4rem !important;
+	line-height:1.7em;
+    color:#454547;
+}
+
+.plus-margin{
+	margin-bottom:30px;
+}
+
+@media (max-width: 480px) {
+.index-quote{
+	margin-bottom:15px;
+	margin-top:30px;
+	font-size:1.1rem !important;
+	line-height:1.4;
+}
+.founder-name{font-size:1.2rem!important;}
+}

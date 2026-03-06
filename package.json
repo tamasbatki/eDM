@@ -1,0 +1,41 @@
+{
+  "name": "condm-internal-builder",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "env:check": "node scripts/check-env.mjs",
+    "dev": "npm run env:check && next dev -p 4000",
+    "build": "next build",
+    "start": "npm run env:check && next start -p 4000",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "canvas": "^3.2.1",
+    "chart.js": "^4.4.9",
+    "chartjs-node-canvas": "^5.0.0",
+    "cheerio": "^1.0.0",
+    "grapesjs": "^0.21.12",
+    "grapesjs-preset-newsletter": "^1.0.2",
+    "next": "^15.2.4",
+    "openai": "^5.16.0",
+    "puppeteer": "^24.4.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "underscore": "^1.13.8",
+    "yahoo-finance2": "^2.13.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
+  }
+}
+

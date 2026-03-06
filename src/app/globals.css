@@ -1,0 +1,51 @@
+@import "grapesjs/dist/css/grapes.min.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-primary: #f18e00;
+  --brand-secondary: #454547;
+  --brand-text: #808083;
+  --brand-border: #e5e5e7;
+  --brand-font: "Hurme Geometric Sans 3", "hurme_geometric_sans_3regular", "Segoe UI", Arial, Helvetica, sans-serif;
+  --brand-font-heading: "Hurme Geometric Sans 3", "hurme_geometric_sans_3SBd", "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(241, 142, 0, 0.14), transparent 45%),
+    radial-gradient(circle at 100% 10%, rgba(69, 69, 71, 0.08), transparent 42%),
+    #f6f6f7;
+  color: var(--brand-text);
+  font-family: var(--brand-font);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--brand-font-heading);
+  color: var(--brand-secondary);
+}
+
+.app-shell {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.gjs-one-bg {
+  background-color: #f8fafc;
+}
+
+.gjs-two-color,
+.gjs-three-bg,
+.gjs-four-color {
+  color: #0f172a;
+}
+
+.gjs-pn-btn {
+  min-width: 30px;
+}
+
+.gjs-editor {
+  border-radius: 10px;
+}
