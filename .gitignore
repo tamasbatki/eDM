@@ -8,3 +8,12 @@ out
 !.env.example
 public/generated
 data/email-templates
+
+# Auto Claude generated files
+.auto-claude/
+.auto-claude-security.json
+.auto-claude-status
+.claude_settings.json
+.worktrees/
+.security-key
+logs/security/
